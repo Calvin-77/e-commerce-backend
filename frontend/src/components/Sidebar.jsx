@@ -1,9 +1,26 @@
 import { useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
+import LogoutModal from './LogoutModal'
 
 function Sidebar() {
   const location = useLocation()
   const [activeItem, setActiveItem] = useState(location.pathname)
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false)
+
+  const handleLogout = () => {
+    setShowLogoutConfirm(true)
+  }
+
+  const confirmLogout = () => {
+    // Implementasi logout logic di sini
+    console.log('User logged out')
+    setShowLogoutConfirm(false)
+    // Redirect ke login page atau clear session
+  }
+
+  const cancelLogout = () => {
+    setShowLogoutConfirm(false)
+  }
 
   const menuItems = [
     {
@@ -74,13 +91,23 @@ function Sidebar() {
 
       {/* Logout Button */}
       <div className="absolute bottom-0 left-0 right-0 p-4">
-        <button className="w-full flex items-center px-3 py-3 text-gray-600 hover:text-red-600 transition-colors duration-200 font-medium">
+        <button 
+          onClick={handleLogout}
+          className="w-full flex items-center px-3 py-3 text-gray-600 hover:text-red-600 transition-colors duration-200 font-medium"
+        >
           <svg className="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
           </svg>
           Logout
         </button>
       </div>
+
+      {/* Logout Confirmation Modal */}
+      <LogoutModal
+        isOpen={showLogoutConfirm}
+        onConfirm={confirmLogout}
+        onCancel={cancelLogout}
+      />
 
     </div>
   )
