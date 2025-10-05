@@ -1,14 +1,25 @@
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import Sidebar from './components/Sidebar'
+import Home from './pages/Home'
+import MovieManagement from './pages/MovieManagement'
 import Reports from './pages/Reports'
 
 function App() {
   return (
-    <div className="App w-full flex">
-      <Sidebar />
-      <div className="flex-1 ml-64">
-        <Reports />
+    <Router>
+      <div className="App w-full flex">
+        <Sidebar />
+        <div className="flex-1 ml-64">
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/dashboard" element={<Home />} />
+            <Route path="/movies" element={<MovieManagement />} />
+            <Route path="/reports" element={<Reports />} />
+            <Route path="*" element={<Home />} />
+          </Routes>
+        </div>
       </div>
-    </div>
+    </Router>
   )
 }
 

@@ -1,11 +1,13 @@
 import { useState } from 'react'
+import { Link, useLocation } from 'react-router-dom'
 
 function Sidebar() {
-  const [activeItem, setActiveItem] = useState('movies')
+  const location = useLocation()
+  const [activeItem, setActiveItem] = useState(location.pathname)
 
   const menuItems = [
     {
-      id: 'dashboard',
+      id: '/dashboard',
       name: 'Dashboard',
       icon: (
         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -15,7 +17,7 @@ function Sidebar() {
       )
     },
     {
-      id: 'movies',
+      id: '/movies',
       name: 'Manajemen Film',
       icon: (
         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -24,7 +26,7 @@ function Sidebar() {
       )
     },
     {
-      id: 'reports',
+      id: '/reports',
       name: 'Laporan',
       icon: (
         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -51,19 +53,20 @@ function Sidebar() {
         <ul className="space-y-2">
           {menuItems.map((item) => (
             <li key={item.id}>
-              <button
+              <Link
+                to={item.id}
                 onClick={() => setActiveItem(item.id)}
                 className={`w-full flex items-center px-3 py-3 text-left rounded-lg transition-colors duration-200 ${
-                  activeItem === item.id
+                  location.pathname === item.id
                     ? 'bg-purple-100 text-purple-700'
                     : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
                 }`}
               >
-                <span className={`mr-3 ${activeItem === item.id ? 'text-purple-700' : 'text-gray-400'}`}>
+                <span className={`mr-3 ${location.pathname === item.id ? 'text-purple-700' : 'text-gray-400'}`}>
                   {item.icon}
                 </span>
                 <span className="font-medium">{item.name}</span>
-              </button>
+              </Link>
             </li>
           ))}
         </ul>
