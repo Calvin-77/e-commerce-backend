@@ -9,33 +9,31 @@ exports.shorthands = undefined;
  * @returns {Promise<void> | void}
  */
 exports.up = (pgm) => {
-    pgm.createTable('users', {
+    pgm.createTable('movies', {
         id: {
             type: 'VARCHAR(50)',
             primaryKey: true,
         },
-        username: {
-            type: 'VARCHAR(50)',
+        title: {
+            type: 'VARCHAR(100)',
             notNull: true,
-            unique: true,
-
         },
-        password: {
+        synopsis: {
             type: 'TEXT',
-            notNull: true,
         },
-        email: {
-            type: 'VARCHAR(255)',
-            unique: true,
-        },
-        role: {
-            type: 'VARCHAR(20)',
-            notNull: true,
-            default: 'user',
-        },
-        balance: {
+        price: {
             type: 'INT',
-            default: 0,
+            notNull: true,
+        },
+        year: {
+            type: 'INT',
+        },
+        video: {
+            type: 'VARCHAR(255)',
+            notNull: true,
+        },
+        image: {
+            type: 'BYTEA',
         },
     });
 };
@@ -46,5 +44,5 @@ exports.up = (pgm) => {
  * @returns {Promise<void> | void}
  */
 exports.down = (pgm) => {
-    pgm.dropTable('users');
+    pgm.dropTable('movies');
 };

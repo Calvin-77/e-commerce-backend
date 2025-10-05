@@ -80,7 +80,46 @@ class UserRepositoryPostgres extends UserRepository {
             throw new InvariantError('user tidak ditemukan');
         }
 
-        return result.rows[0].role;
+        return result.rows[0].role === "admin";
+    }
+
+    async getUserById(id) {
+        const query = {
+            text: 'SELECT id, username, email, balance, password FROM users WHERE id = $1',
+            values: [id],
+        };
+
+        const result = await this._pool.query(query);
+
+        if (!result.rowCount) {
+            throw new InvariantError('user tidak ditemukan');
+        }
+
+        return result.rows[0];
+    }
+
+    async updateBalance(userId, amount) {
+        const query = {
+            text: 'UPDATE users SET balance = balance + $1 WHERE id = $2',
+            values: [amount, userId],
+        };
+
+        await this._pool.query(query);
+    }
+
+    async updateUser(id, userDetails) {
+        const { username, password, email } = userDetails;
+        
+        const query = {
+            text: 'UPDATE users SET username = $1, password = $2, email = $3 WHERE id = $4',
+            values: [username, password, email, id],
+        };
+
+        const result = await this._pool.query(query);
+
+        if (!result.rowCount) {
+            throw new InvariantError('user tidak ditemukan');
+        }
     }
 }
 

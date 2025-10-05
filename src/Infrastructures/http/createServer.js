@@ -2,6 +2,8 @@ const Hapi = require('@hapi/hapi');
 const Jwt = require('@hapi/jwt');
 const users = require('../../Interfaces/http/api/users');
 const authentications = require('../../Interfaces/http/api/authentications');
+const movies = require('../../Interfaces/http/api/movies');
+const transactions = require('../../Interfaces/http/api/transactions');
 const config = require('../../Commons/config');
 const DomainErrorTranslator = require('../../Commons/exceptions/DomainErrorTranslator');
 const ClientError = require('../../Commons/exceptions/ClientError');
@@ -43,12 +45,24 @@ const createServer = async (container) => {
             plugin: authentications,
             options: { container },
         },
+        {
+            plugin: movies,
+            options: { container },
+        },
+        {
+            plugin: transactions,
+            options: { container },
+        }
     ]);
 
     server.ext('onPreResponse', (request, h) => {
         const { response } = request;
 
         if (response instanceof Error) {
+            // Log the actual error for debugging
+            console.error('Server Error:', response.message);
+            console.error('Stack:', response.stack);
+            
             const translatedError = DomainErrorTranslator.translate(response);
 
             if (translatedError instanceof ClientError) {

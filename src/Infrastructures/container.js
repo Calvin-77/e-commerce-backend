@@ -21,6 +21,21 @@ const AuthenticationRepository = require('../Domains/authentications/Authenticat
 const LoginUserUseCase = require('../Applications/use_case/LoginUserUseCase');
 const LogoutUserUseCase = require('../Applications/use_case/LogoutUserUseCase');
 const AuthenticationRepositoryPostgres = require('./repository/AuthenticationRepositoryPostgres');
+const MovieRepository = require('../Domains/movies/MovieRepository');
+const MovieRepositoryPostgres = require('./repository/MovieRepositoryPostgres');
+const TransactionRepository = require('../Domains/transactions/TransactionRepository');
+const TransactionRepositoryPostgres = require('./repository/TransactionRepositoryPostgres');
+const GetMovieDetailsUseCase = require('../Applications/use_case/GetMovieDetailsUseCase');
+const GetAllMoviesUseCase = require('../Applications/use_case/GetAllMoviesUseCase');
+const AddMovieUseCase = require('../Applications/use_case/AddMovieUseCase');
+const TopupBalanceUseCase = require('../Applications/use_case/TopupBalanceUseCase');
+const PurchaseMovieUseCase = require('../Applications/use_case/PurchaseMovieUseCase');
+const GetUserTopupHistoryUseCase = require('../Applications/use_case/GetUserTopupHistoryUseCase');
+const GetAllSalesDataUseCase = require('../Applications/use_case/GetAllSalesDataUseCase');
+const UpdateMovieUseCase = require('../Applications/use_case/UpdateMovieUseCase');
+const DeleteMovieUseCase = require('../Applications/use_case/DeleteMovieUseCase');
+const UpdateUserProfileUseCase = require('../Applications/use_case/UpdateUserProfileUseCase');
+const GetUserPurchasedMoviesUseCase = require('../Applications/use_case/GetUserPurchasedMoviesUseCase');
 
 // creating container
 const container = createContainer();
@@ -66,6 +81,28 @@ container.register([
     {
         key: AuthenticationRepository.name,
         Class: AuthenticationRepositoryPostgres,
+        parameter: {
+            dependencies: [
+                {
+                    concrete: pool,
+                },
+            ],
+        },
+    },
+    {
+        key: MovieRepository.name,
+        Class: MovieRepositoryPostgres,
+        parameter: {
+            dependencies: [
+                {
+                    concrete: pool,
+                },
+            ],
+        },
+    },
+    {
+        key: TransactionRepository.name,
+        Class: TransactionRepositoryPostgres,
         parameter: {
             dependencies: [
                 {
@@ -146,6 +183,185 @@ container.register([
                 {
                     name: 'authenticationRepository',
                     internal: AuthenticationRepository.name,
+                },
+            ],
+        },
+    },
+    {
+        key: GetMovieDetailsUseCase.name,
+        Class: GetMovieDetailsUseCase,
+        parameter: {
+            injectType: 'destructuring',
+            dependencies: [
+                {
+                    name: 'movieRepository',
+                    internal: MovieRepository.name,
+                },
+                {
+                    name: 'transactionRepository',
+                    internal: TransactionRepository.name,
+                },
+            ],
+        },
+    },
+    {
+        key: GetAllMoviesUseCase.name,
+        Class: GetAllMoviesUseCase,
+        parameter: {
+            injectType: 'destructuring',
+            dependencies: [
+                {
+                    name: 'movieRepository',
+                    internal: MovieRepository.name,
+                },
+            ],
+        },
+    },
+    {
+        key: AddMovieUseCase.name,
+        Class: AddMovieUseCase,
+        parameter: {
+            injectType: 'destructuring',
+            dependencies: [
+                {
+                    name: 'movieRepository',
+                    internal: MovieRepository.name,
+                },
+                {
+                    name: 'userRepository',
+                    internal: UserRepository.name,
+                },
+            ],
+        },
+    },
+    {
+        key: TopupBalanceUseCase.name,
+        Class: TopupBalanceUseCase,
+        parameter: {
+            injectType: 'destructuring',
+            dependencies: [
+                {
+                    name: 'userRepository',
+                    internal: UserRepository.name,
+                },
+                {
+                    name: 'transactionRepository',
+                    internal: TransactionRepository.name,
+                },
+            ],
+        },
+    },
+    {
+        key: PurchaseMovieUseCase.name,
+        Class: PurchaseMovieUseCase,
+        parameter: {
+            injectType: 'destructuring',
+            dependencies: [
+                {
+                    name: 'userRepository',
+                    internal: UserRepository.name,
+                },
+                {
+                    name: 'movieRepository',
+                    internal: MovieRepository.name,
+                },
+                {
+                    name: 'transactionRepository',
+                    internal: TransactionRepository.name,
+                },
+            ],
+        },
+    },
+    {
+        key: GetUserTopupHistoryUseCase.name,
+        Class: GetUserTopupHistoryUseCase,
+        parameter: {
+            injectType: 'destructuring',
+            dependencies: [
+                {
+                    name: 'transactionRepository',
+                    internal: TransactionRepository.name,
+                },
+            ],
+        },
+    },
+    {
+        key: GetAllSalesDataUseCase.name,
+        Class: GetAllSalesDataUseCase,
+        parameter: {
+            injectType: 'destructuring',
+            dependencies: [
+                {
+                    name: 'transactionRepository',
+                    internal: TransactionRepository.name,
+                },
+                {
+                    name: 'userRepository',
+                    internal: UserRepository.name,
+                },
+            ],
+        },
+    },
+    {
+        key: UpdateMovieUseCase.name,
+        Class: UpdateMovieUseCase,
+        parameter: {
+            injectType: 'destructuring',
+            dependencies: [
+                {
+                    name: 'movieRepository',
+                    internal: MovieRepository.name,
+                },
+                {
+                    name: 'userRepository',
+                    internal: UserRepository.name,
+                },
+            ],
+        },
+    },
+    {
+        key: DeleteMovieUseCase.name,
+        Class: DeleteMovieUseCase,
+        parameter: {
+            injectType: 'destructuring',
+            dependencies: [
+                {
+                    name: 'movieRepository',
+                    internal: MovieRepository.name,
+                },
+                {
+                    name: 'userRepository',
+                    internal: UserRepository.name,
+                },
+            ],
+        },
+    },
+    {
+        key: UpdateUserProfileUseCase.name,
+        Class: UpdateUserProfileUseCase,
+        parameter: {
+            injectType: 'destructuring',
+            dependencies: [
+                {
+                    name: 'userRepository',
+                    internal: UserRepository.name,
+                },
+                {
+                    name: 'passwordHash',
+                    internal: PasswordHash.name,
+                },
+            ],
+        },
+    },
+    {
+        key: GetUserPurchasedMoviesUseCase.name,
+        Class: GetUserPurchasedMoviesUseCase,
+        parameter: {
+            injectType: 'destructuring',
+            dependencies: [
+                {
+                    name: 'transactionRepository',
+                    internal: TransactionRepository.name,
                 },
             ],
         },
