@@ -1,9 +1,9 @@
-import Home from './pages/Home'
+import MovieManagement from './pages/MovieManagement'
 
 function App() {
   return (
     <div className="App w-full">
-      <Home />
+      <MovieManagement />
     </div>
   )
 }
