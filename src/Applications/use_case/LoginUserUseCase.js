@@ -23,7 +23,7 @@ class LoginUserUseCase {
 
         const id = await this._userRepository.getIdByUsername(username);
 
-        const role = await this._userRepository.isAdmin(id);
+        const isAdmin = await this._userRepository.isAdmin(id);
 
         const accessToken = await this._authenticationTokenManager
             .createAccessToken({ username, id });
@@ -35,9 +35,14 @@ class LoginUserUseCase {
             refreshToken,
         });
 
+        const result = {
+            ...newAuthentication,
+            role: isAdmin === true ? 'admin' : 'user',
+        }
+
         await this._authenticationRepository.addToken(newAuthentication.refreshToken);
 
-        return newAuthentication;
+        return result;
     }
 }
 
