@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
+import { useToast } from '../hooks/useToast'
 
 function EditMovie() {
   const navigate = useNavigate()
   const { id } = useParams()
+  const { showToast } = useToast()
   const [formData, setFormData] = useState({
     title: '',
     synopsis: '',
@@ -132,14 +134,14 @@ function EditMovie() {
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 2000))
       
-      // Show success message (you can replace this with actual success notification)
-      alert('Film berhasil diperbarui!')
+      // Show success toast
+      showToast('Film berhasil diperbarui!', 'success')
       
       // Navigate back to movie management
       navigate('/movies')
     } catch (error) {
       console.error('Error updating movie:', error)
-      alert('Terjadi kesalahan saat memperbarui film')
+      showToast('Terjadi kesalahan saat memperbarui film', 'error')
     } finally {
       setLoading(false)
     }

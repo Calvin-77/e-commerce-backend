@@ -1,11 +1,19 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useToast } from '../hooks/useToast'
+import DeleteMovieModal from '../components/DeleteMovieModal'
 
 function MovieManagement() {
   const navigate = useNavigate()
+  const { showToast } = useToast()
   const [movies, setMovies] = useState([])
   const [searchTerm, setSearchTerm] = useState('')
   const [loading, setLoading] = useState(true)
+  const [deleteModal, setDeleteModal] = useState({
+    isOpen: false,
+    movieId: null,
+    movieTitle: ''
+  })
 
   // Mock data untuk sementara
   useEffect(() => {
@@ -65,8 +73,56 @@ function MovieManagement() {
     navigate('/movies/add')
   }
 
+
   const handleEditMovie = (movieId) => {
     navigate(`/movies/edit/${movieId}`)
+  }
+
+  const handleDeleteMovie = (movieId, movieTitle) => {
+    setDeleteModal({
+      isOpen: true,
+      movieId: movieId,
+      movieTitle: movieTitle
+    })
+  }
+
+  const confirmDeleteMovie = async () => {
+    try {
+      // TODO: Replace with actual API call
+      // Example: await movieApi.deleteMovie(deleteModal.movieId)
+      
+      console.log('Deleting movie:', deleteModal.movieId)
+      
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1000))
+      
+      // Remove movie from state
+      setMovies(prevMovies => 
+        prevMovies.filter(movie => movie.id !== deleteModal.movieId)
+      )
+      
+      // Show success toast
+      showToast('Film berhasil dihapus!', 'success')
+      
+    } catch (error) {
+      console.error('Error deleting movie:', error)
+      showToast('Terjadi kesalahan saat menghapus film', 'error')
+    } finally {
+      // Close modal
+      setDeleteModal({
+        isOpen: false,
+        movieId: null,
+        movieTitle: ''
+      })
+    }
+  }
+
+  const cancelDeleteMovie = () => {
+    setDeleteModal({
+      isOpen: false,
+      movieId: null,
+      movieTitle: ''
+    })
   }
 
 
@@ -202,7 +258,8 @@ function MovieManagement() {
                           </svg>
                         </button>
                         <button
-                          className="text-gray-400 hover:text-gray-600 p-1"
+                          onClick={() => handleDeleteMovie(movie.id, movie.title)}
+                          className="text-gray-400 hover:text-red-600 p-1"
                           title="Delete"
                         >
                           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -229,6 +286,14 @@ function MovieManagement() {
           )}
         </div>
       </main>
+
+      {/* Delete Movie Modal */}
+      <DeleteMovieModal
+        isOpen={deleteModal.isOpen}
+        onConfirm={confirmDeleteMovie}
+        onCancel={cancelDeleteMovie}
+        movieTitle={deleteModal.movieTitle}
+      />
     </div>
   )
 }

@@ -1,8 +1,10 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useToast } from '../hooks/useToast'
 
 function AddMovie() {
   const navigate = useNavigate()
+  const { showToast } = useToast()
   const [formData, setFormData] = useState({
     title: '',
     synopsis: '',
@@ -85,14 +87,14 @@ function AddMovie() {
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 2000))
       
-      // Show success message (you can replace this with actual success notification)
-      alert('Film berhasil ditambahkan!')
+      // Show success toast
+      showToast('Film berhasil ditambahkan!', 'success')
       
       // Navigate back to movie management
       navigate('/movies')
     } catch (error) {
       console.error('Error adding movie:', error)
-      alert('Terjadi kesalahan saat menambahkan film')
+      showToast('Terjadi kesalahan saat menambahkan film', 'error')
     } finally {
       setLoading(false)
     }
