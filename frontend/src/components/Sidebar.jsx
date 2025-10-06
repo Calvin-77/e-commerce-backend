@@ -1,9 +1,10 @@
 import { useState } from 'react'
-import { Link, useLocation } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import LogoutModal from './LogoutModal'
 
 function Sidebar() {
   const location = useLocation()
+  const navigate = useNavigate()
   const [activeItem, setActiveItem] = useState(location.pathname)
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false)
 
@@ -11,11 +12,42 @@ function Sidebar() {
     setShowLogoutConfirm(true)
   }
 
-  const confirmLogout = () => {
-    // Implementasi logout logic di sini
-    console.log('User logged out')
-    setShowLogoutConfirm(false)
-    // Redirect ke login page atau clear session
+  const confirmLogout = async () => {
+    try {
+      const token = localStorage.getItem('authToken')
+      const refreshToken = localStorage.getItem('refreshToken')
+
+      if (token && refreshToken) {
+        // Call logout API
+        await fetch('http://localhost:5000/authentications', {
+          method: 'DELETE',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            refreshToken: refreshToken
+          })
+        })
+      }
+
+      // Clear tokens from localStorage
+      localStorage.removeItem('authToken')
+      localStorage.removeItem('refreshToken')
+      
+      setShowLogoutConfirm(false)
+      
+      // Force page reload to trigger authentication check
+      window.location.href = '/login'
+    } catch (error) {
+      console.error('Error during logout:', error)
+      // Even if API call fails, clear local tokens and redirect
+      localStorage.removeItem('authToken')
+      localStorage.removeItem('refreshToken')
+      
+      setShowLogoutConfirm(false)
+      window.location.href = '/login'
+    }
   }
 
   const cancelLogout = () => {
