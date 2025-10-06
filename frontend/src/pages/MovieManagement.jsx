@@ -15,59 +15,34 @@ function MovieManagement() {
     movieTitle: ''
   })
 
-  // Mock data untuk sementara
+  // Load movies from API
   useEffect(() => {
-    setTimeout(() => {
-      setMovies([
-        {
-          id: 1,
-          title: "Pengabdi Setan 2",
-          genre: "Horror",
-          year: 2023,
-          price: 50000,
-          stock: 50,
-          status: "Tersedia"
-        },
-        {
-          id: 2,
-          title: "Dilan 1991",
-          genre: "Romance",
-          year: 2023,
-          price: 45000,
-          stock: 30,
-          status: "Tersedia"
-        },
-        {
-          id: 3,
-          title: "The Raid 3",
-          genre: "Action",
-          year: 2024,
-          price: 55000,
-          stock: 0,
-          status: "Habis"
-        },
-        {
-          id: 4,
-          title: "Laskar Pelangi",
-          genre: "Drama",
-          year: 2023,
-          price: 40000,
-          stock: 20,
-          status: "Tersedia"
-        },
-        {
-          id: 5,
-          title: "Ayat-Ayat Cinta 3",
-          genre: "Romance",
-          year: 2024,
-          price: 48000,
-          stock: 15,
-          status: "Tersedia"
-        }
-      ])
-      setLoading(false)
-    }, 1000)
+    loadMovies()
   }, [])
+
+  const loadMovies = async () => {
+    try {
+      setLoading(true)
+      const response = await fetch('http://localhost:5000/movies')
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`)
+      }
+      
+      const data = await response.json()
+      
+      if (data.status === 'success') {
+        setMovies(data.data.movies)
+      } else {
+        showToast('Gagal memuat daftar film', 'error')
+      }
+    } catch (error) {
+      console.error('Error loading movies:', error)
+      showToast('Terjadi kesalahan saat memuat film', 'error')
+    } finally {
+      setLoading(false)
+    }
+  }
 
   const handleAddMovie = () => {
     navigate('/movies/add')
@@ -88,21 +63,37 @@ function MovieManagement() {
 
   const confirmDeleteMovie = async () => {
     try {
-      // TODO: Replace with actual API call
-      // Example: await movieApi.deleteMovie(deleteModal.movieId)
-      
-      console.log('Deleting movie:', deleteModal.movieId)
-      
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000))
-      
-      // Remove movie from state
-      setMovies(prevMovies => 
-        prevMovies.filter(movie => movie.id !== deleteModal.movieId)
-      )
-      
-      // Show success toast
-      showToast('Film berhasil dihapus!', 'success')
+      const token = localStorage.getItem('authToken')
+      if (!token) {
+        showToast('Anda harus login terlebih dahulu', 'error')
+        return
+      }
+
+      const response = await fetch(`http://localhost:5000/movies/${deleteModal.movieId}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      })
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`)
+      }
+
+      const data = await response.json()
+
+      if (data.status === 'success') {
+        // Remove movie from state
+        setMovies(prevMovies => 
+          prevMovies.filter(movie => movie.id !== deleteModal.movieId)
+        )
+        
+        // Show success toast
+        showToast('Film berhasil dihapus!', 'success')
+      } else {
+        showToast(data.message || 'Gagal menghapus film', 'error')
+      }
       
     } catch (error) {
       console.error('Error deleting movie:', error)

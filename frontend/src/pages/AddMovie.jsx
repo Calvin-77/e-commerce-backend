@@ -69,6 +69,12 @@ function AddMovie() {
     setLoading(true)
     
     try {
+      const token = localStorage.getItem('authToken')
+      if (!token) {
+        showToast('Anda harus login terlebih dahulu', 'error')
+        return
+      }
+
       // Prepare data according to MovieDetails entity structure
       const movieData = {
         title: formData.title.trim(),
@@ -81,17 +87,31 @@ function AddMovie() {
       
       console.log('Movie data to be saved:', movieData)
       
-      // TODO: Replace with actual API call to backend
-      // Example: await movieApi.addMovie(movieData)
+      const response = await fetch('http://localhost:5000/movies', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(movieData)
+      })
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`)
+      }
+
+      const data = await response.json()
+
+      if (data.status === 'success') {
+        // Show success toast
+        showToast('Film berhasil ditambahkan!', 'success')
+        
+        // Navigate back to movie management
+        navigate('/movies')
+      } else {
+        showToast(data.message || 'Gagal menambahkan film', 'error')
+      }
       
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 2000))
-      
-      // Show success toast
-      showToast('Film berhasil ditambahkan!', 'success')
-      
-      // Navigate back to movie management
-      navigate('/movies')
     } catch (error) {
       console.error('Error adding movie:', error)
       showToast('Terjadi kesalahan saat menambahkan film', 'error')

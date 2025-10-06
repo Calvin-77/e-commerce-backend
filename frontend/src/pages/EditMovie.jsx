@@ -27,35 +27,46 @@ function EditMovie() {
     try {
       setLoadingMovie(true)
       
-      // TODO: Replace with actual API call
-      // Example: const movie = await movieApi.getMovieById(id)
-      
-      // Mock data - simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000))
-      
-      // Mock movie data (you can replace this with actual API response)
-      const mockMovie = {
-        id: id,
-        title: "Pengabdi Setan 2",
-        synopsis: "Cerita tentang keluarga yang menghadapi kekuatan jahat dari dunia lain setelah pindah ke rumah baru.",
-        year: 2023,
-        price: 50000,
-        video: "https://example.com/pengabdi-setan-2.mp4",
-        image: "https://example.com/pengabdi-setan-2-poster.jpg"
+      const token = localStorage.getItem('authToken')
+      if (!token) {
+        showToast('Anda harus login terlebih dahulu', 'error')
+        navigate('/movies')
+        return
       }
       
-      setFormData({
-        title: mockMovie.title,
-        synopsis: mockMovie.synopsis,
-        year: mockMovie.year.toString(),
-        price: mockMovie.price.toString(),
-        video: mockMovie.video,
-        image: mockMovie.image
+      const response = await fetch(`http://localhost:5000/movies/${id}`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
       })
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`)
+      }
+
+      const data = await response.json()
+      
+      if (data.status === 'success') {
+        const movie = data.data.movie
+        
+        setFormData({
+          title: movie.title,
+          synopsis: movie.synopsis,
+          year: movie.year.toString(),
+          price: movie.price.toString(),
+          video: movie.video,
+          image: movie.image || ''
+        })
+      } else {
+        showToast('Gagal memuat data film', 'error')
+        navigate('/movies')
+      }
       
     } catch (error) {
       console.error('Error loading movie:', error)
-      alert('Gagal memuat data film')
+      showToast('Gagal memuat data film', 'error')
       navigate('/movies')
     } finally {
       setLoadingMovie(false)
@@ -115,9 +126,14 @@ function EditMovie() {
     setLoading(true)
     
     try {
+      const token = localStorage.getItem('authToken')
+      if (!token) {
+        showToast('Anda harus login terlebih dahulu', 'error')
+        return
+      }
+
       // Prepare data according to MovieDetails entity structure
       const movieData = {
-        id: id,
         title: formData.title.trim(),
         synopsis: formData.synopsis.trim(),
         year: parseInt(formData.year),
@@ -128,17 +144,31 @@ function EditMovie() {
       
       console.log('Updated movie data:', movieData)
       
-      // TODO: Replace with actual API call to backend
-      // Example: await movieApi.updateMovie(id, movieData)
+      const response = await fetch(`http://localhost:5000/movies/${id}`, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(movieData)
+      })
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`)
+      }
+
+      const data = await response.json()
+
+      if (data.status === 'success') {
+        // Show success toast
+        showToast('Film berhasil diperbarui!', 'success')
+        
+        // Navigate back to movie management
+        navigate('/movies')
+      } else {
+        showToast(data.message || 'Gagal memperbarui film', 'error')
+      }
       
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 2000))
-      
-      // Show success toast
-      showToast('Film berhasil diperbarui!', 'success')
-      
-      // Navigate back to movie management
-      navigate('/movies')
     } catch (error) {
       console.error('Error updating movie:', error)
       showToast('Terjadi kesalahan saat memperbarui film', 'error')
