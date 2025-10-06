@@ -3,6 +3,7 @@ import Sidebar from './components/Sidebar'
 import Home from './pages/Home'
 import MovieManagement from './pages/MovieManagement'
 import AddMovie from './pages/AddMovie'
+import EditMovie from './pages/EditMovie'
 import Reports from './pages/Reports'
 
 function App() {
@@ -16,6 +17,7 @@ function App() {
             <Route path="/dashboard" element={<Home />} />
             <Route path="/movies" element={<MovieManagement />} />
             <Route path="/movies/add" element={<AddMovie />} />
+            <Route path="/movies/edit/:id" element={<EditMovie />} />
             <Route path="/reports" element={<Reports />} />
             <Route path="*" element={<Home />} />
           </Routes>

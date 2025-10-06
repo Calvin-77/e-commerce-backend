@@ -65,6 +65,10 @@ function MovieManagement() {
     navigate('/movies/add')
   }
 
+  const handleEditMovie = (movieId) => {
+    navigate(`/movies/edit/${movieId}`)
+  }
+
 
   const filteredMovies = movies.filter(movie =>
     movie.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -189,6 +193,7 @@ function MovieManagement() {
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                       <div className="flex space-x-2">
                         <button
+                          onClick={() => handleEditMovie(movie.id)}
                           className="text-gray-400 hover:text-gray-600 p-1"
                           title="Edit"
                         >
