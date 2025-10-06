@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 
 function MovieManagement() {
+  const navigate = useNavigate()
   const [movies, setMovies] = useState([])
   const [searchTerm, setSearchTerm] = useState('')
   const [loading, setLoading] = useState(true)
@@ -60,7 +62,7 @@ function MovieManagement() {
   }, [])
 
   const handleAddMovie = () => {
-    console.log('Add new movie')
+    navigate('/movies/add')
   }
 
 
